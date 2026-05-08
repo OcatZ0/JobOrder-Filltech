@@ -94,4 +94,45 @@ class DashboardController extends Controller
 
         return redirect()->route('dashboard')->with('success', 'Pesanan pekerjaan berhasil ditambahkan');
     }
+
+    /**
+     * Update job status via API.
+     */
+    public function updateStatus(Request $request, Job $job)
+    {
+        $validated = $request->validate([
+            'status' => 'required|in:waiting_acc,on_progress,pending,done',
+            'pending_reason' => 'nullable|string|max:200|required_if:status,pending',
+        ], [
+            'status.required' => 'Status tidak boleh kosong',
+            'status.in' => 'Status tidak valid',
+            'pending_reason.required_if' => 'Alasan pending harus diisi',
+            'pending_reason.max' => 'Alasan pending maksimal 200 karakter',
+        ]);
+
+        $job->update($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Status pekerjaan berhasil diperbarui',
+            'data' => [
+                'id' => $job->id,
+                'status' => $job->status,
+                'status_label' => $this->getStatusLabel($job->status),
+            ]
+        ]);
+    }
+
+    /**
+     * Get status label.
+     */
+    private function getStatusLabel($status)
+    {
+        return match($status) {
+            'done' => 'Selesai',
+            'on_progress' => 'Sedang Berjalan',
+            'pending' => 'Ditangguhkan',
+            default => 'Menunggu Persetujuan',
+        };
+    }
 }

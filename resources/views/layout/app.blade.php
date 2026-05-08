@@ -10,9 +10,16 @@
     <!-- Topbar -->
     <div class="navbar bg-white shadow-sm border-b border-gray-200">
         <div class="flex-1">
-            <a href="/" class="text-xl font-bold text-indigo-600 pl-6">
+            <a href="{{ route('dashboard') }}" class="text-xl font-bold text-indigo-600 pl-6">
                 {{ config('app.name') }}
             </a>
+            <ul class="menu menu-horizontal px-1 gap-2 ml-6">
+                <li>
+                    <a href="{{ route('dashboard') }}" class="@if(Route::current()->getName() === 'dashboard') active @endif">
+                        Dashboard
+                    </a>
+                </li>
+            </ul>
         </div>
         <div class="flex-none gap-4 pr-6">
             <!-- User Info -->

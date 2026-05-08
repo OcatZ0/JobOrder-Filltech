@@ -31,6 +31,8 @@ class Job extends Model
         'job_description',
         'start_at',
         'end_at',
+        'status',
+        'pending_reason',
         'is_deleted',
     ];
 
@@ -62,5 +64,13 @@ class Job extends Model
     public function assignedUser()
     {
         return $this->belongsTo(User::class, 'assigned_to');
+    }
+
+    /**
+     * Get the details for this job.
+     */
+    public function details()
+    {
+        return $this->hasMany(JobDetail::class, 'job_detail_id');
     }
 }

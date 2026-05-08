@@ -23,15 +23,8 @@
     <!-- Overview Section -->
     <div class="mb-8">
         <h2 class="text-xl font-semibold text-slate-700 mb-6">Ringkasan Status</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <!-- Total Jobs -->
-            <div class="rounded-2xl bg-white shadow-sm border border-gray-200 p-6">
-                <div class="text-center">
-                    <p class="text-gray-500 text-sm font-medium mb-2">Total Pesanan</p>
-                    <p class="text-4xl font-bold text-indigo-600">{{ $jobs->count() }}</p>
-                </div>
-            </div>
-
+        <!-- Status Cards Row -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
             <!-- Waiting Approval -->
             <div class="rounded-2xl bg-white shadow-sm border border-gray-200 p-6">
                 <div class="text-center">
@@ -48,11 +41,28 @@
                 </div>
             </div>
 
+            <!-- Pending -->
+            <div class="rounded-2xl bg-white shadow-sm border border-gray-200 p-6">
+                <div class="text-center">
+                    <p class="text-gray-500 text-sm font-medium mb-2">Ditangguhkan</p>
+                    <p class="text-4xl font-bold text-red-500">{{ $allStatusCounts['pending'] ?? 0 }}</p>
+                </div>
+            </div>
+
             <!-- Done -->
             <div class="rounded-2xl bg-white shadow-sm border border-gray-200 p-6">
                 <div class="text-center">
                     <p class="text-gray-500 text-sm font-medium mb-2">Selesai</p>
                     <p class="text-4xl font-bold text-emerald-500">{{ $allStatusCounts['done'] ?? 0 }}</p>
+                </div>
+            </div>
+        </div>
+        <!-- Total Jobs Row -->
+        <div class="grid grid-cols-1 gap-6">
+            <div class="rounded-2xl bg-white shadow-sm border border-gray-200 p-6">
+                <div class="text-center">
+                    <p class="text-gray-500 text-sm font-medium mb-2">Total Pesanan</p>
+                    <p class="text-4xl font-bold text-indigo-600">{{ $jobs->count() }}</p>
                 </div>
             </div>
         </div>
@@ -98,15 +108,15 @@
                         <td class="px-6 py-4 text-sm text-slate-700">{{ $job->start_at->format('M d, Y H:i') }}</td>
                         <td class="px-6 py-4 text-sm text-slate-700">{{ $job->end_at->format('M d, Y H:i') }}</td>
                         <td class="px-6 py-4">
-                            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold {{ $job->status === 'done' ? 'bg-emerald-100 text-emerald-700' : ($job->status === 'on_progress' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700') }}">
-                                <span class="w-2 h-2 rounded-full {{ $job->status === 'done' ? 'bg-emerald-500' : ($job->status === 'on_progress' ? 'bg-amber-500' : 'bg-blue-500') }}"></span>
-                                {{ $job->status === 'done' ? 'Selesai' : ($job->status === 'on_progress' ? 'Sedang Berjalan' : 'Menunggu Persetujuan') }}
+                            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold {{ $job->status === 'done' ? 'bg-emerald-100 text-emerald-700' : ($job->status === 'on_progress' ? 'bg-amber-100 text-amber-700' : ($job->status === 'pending' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700')) }}">
+                                <span class="w-2 h-2 rounded-full {{ $job->status === 'done' ? 'bg-emerald-500' : ($job->status === 'on_progress' ? 'bg-amber-500' : ($job->status === 'pending' ? 'bg-red-500' : 'bg-blue-500')) }}"></span>
+                                {{ $job->status === 'done' ? 'Selesai' : ($job->status === 'on_progress' ? 'Sedang Berjalan' : ($job->status === 'pending' ? 'Ditangguhkan' : 'Menunggu Persetujuan')) }}
                             </span>
                         </td>
                         <td class="px-6 py-4">
                             <div class="flex gap-2">
-                                <button class="btn btn-xs btn-outline">Lihat</button>
-                                <button class="btn btn-xs btn-outline">Edit</button>
+                                <a href="{{ route('job.details', $job) }}" class="btn btn-xs btn-outline">Lihat</a>
+                                <a href="{{ route('job-documentation.create', $job) }}" class="btn btn-xs btn-outline">Dokumentasi</a>
                                 <button class="btn btn-xs btn-outline">Ubah Status</button>
                             </div>
                         </td>
@@ -129,6 +139,7 @@
         const allStatusData = {
             'Menunggu Persetujuan': {{ $allStatusCounts['waiting_acc'] ?? 0 }},
             'Sedang Berjalan': {{ $allStatusCounts['on_progress'] ?? 0 }},
+            'Ditangguhkan': {{ $allStatusCounts['pending'] ?? 0 }},
             'Selesai': {{ $allStatusCounts['done'] ?? 0 }}
         };
 
@@ -139,7 +150,7 @@
                 labels: Object.keys(allStatusData),
                 datasets: [{
                     data: Object.values(allStatusData),
-                    backgroundColor: ['#3b82f6', '#f59e0b', '#10b981'],
+                    backgroundColor: ['#3b82f6', '#f59e0b', '#ef4444', '#10b981'],
                     borderColor: '#fff',
                     borderWidth: 2
                 }]

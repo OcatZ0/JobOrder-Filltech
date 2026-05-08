@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('job_detail', function (Blueprint $table) {
             $table->integer('id', true);
             $table->integer('job_detail_id')->index('fk_job_detail_job');
-            $table->string('picture_filename', 200)->unique('picture_filename');
-            $table->string('picture_description', 200);
-            $table->integer('is_deleted');
+            $table->string('picture_filename', 255);
+            $table->string('picture_description', 200)->nullable();
+            $table->boolean('is_deleted');
         });
     }
 
