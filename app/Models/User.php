@@ -1,64 +1,57 @@
 <?php
 
+/**
+ * Created by Reliese Model.
+ */
+
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 
-class User extends Authenticatable
+/**
+ * Class User
+ * 
+ * @property int $id
+ * @property string $name
+ * @property string $username
+ * @property string $password
+ * @property string $role
+ * @property bool $is_deleted
+ * 
+ * @property Collection|Job[] $jobs
+ * @property Collection|JobAssigment[] $job_assigments
+ *
+ * @package App\Models
+ */
+class User extends Model
 {
-    /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+	protected $table = 'user';
+	public $timestamps = false;
 
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'user';
+	protected $casts = [
+		'is_deleted' => 'bool'
+	];
 
-    /**
-     * Indicates if the model should be timestamped.
-     *
-     * @var bool
-     */
-    public $timestamps = false;
+	protected $hidden = [
+		'password'
+	];
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
-    protected $fillable = [
-        'name',
-        'username',
-        'password',
-        'role',
-        'is_deleted',
-    ];
+	protected $fillable = [
+		'name',
+		'username',
+		'password',
+		'role',
+		'is_deleted'
+	];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'password',
-    ];
+	public function jobs()
+	{
+		return $this->hasMany(Job::class, 'created_by');
+	}
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'password' => 'hashed',
-            'is_deleted' => 'boolean',
-        ];
-    }
+	public function job_assigments()
+	{
+		return $this->hasMany(JobAssigment::class, 'assigned_to');
+	}
 }

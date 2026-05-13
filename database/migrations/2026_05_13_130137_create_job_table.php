@@ -15,11 +15,11 @@ return new class extends Migration
             $table->integer('id', true);
             $table->integer('number_of_the_day');
             $table->integer('created_by')->index('fk_job_created_by');
-            $table->integer('assigned_to')->index('fk_job_assigned_to');
             $table->string('job_description', 200);
             $table->dateTime('start_at');
-            $table->dateTime('end_at');
-            $table->enum('status', ['waiting_acc', 'on_progress', 'pending', 'done', '']);
+            $table->integer('duration');
+            $table->dateTime('end_at')->nullable();
+            $table->enum('status', ['waiting_acc', 'on_progress', 'pending', 'done'])->default('waiting_acc');
             $table->string('pending_reason', 200)->nullable();
             $table->boolean('is_deleted');
         });

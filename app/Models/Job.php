@@ -1,76 +1,67 @@
 <?php
 
+/**
+ * Created by Reliese Model.
+ */
+
 namespace App\Models;
 
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Class Job
+ * 
+ * @property int $id
+ * @property int $number_of_the_day
+ * @property int $created_by
+ * @property string $job_description
+ * @property Carbon $start_at
+ * @property int $duration
+ * @property Carbon|null $end_at
+ * @property string $status
+ * @property string|null $pending_reason
+ * @property bool $is_deleted
+ * 
+ * @property User $user
+ * @property Collection|JobDetail[] $job_details
+ *
+ * @package App\Models
+ */
 class Job extends Model
 {
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'job';
+	protected $table = 'job';
+	public $timestamps = false;
 
-    /**
-     * Indicates if the model should be timestamped.
-     *
-     * @var bool
-     */
-    public $timestamps = false;
+	protected $casts = [
+		'number_of_the_day' => 'int',
+		'created_by' => 'int',
+		'start_at' => 'datetime',
+		'duration' => 'int',
+		'end_at' => 'datetime',
+		'is_deleted' => 'bool'
+	];
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
-    protected $fillable = [
-        'created_by',
-        'assigned_to',
-        'job_description',
-        'start_at',
-        'end_at',
-        'status',
-        'pending_reason',
-        'is_deleted',
-    ];
+	protected $fillable = [
+		'number_of_the_day',
+		'created_by',
+		'job_description',
+		'start_at',
+		'duration',
+		'end_at',
+		'status',
+		'pending_reason',
+		'is_deleted'
+	];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'start_at' => 'datetime',
-            'end_at' => 'datetime',
-            'is_deleted' => 'boolean',
-        ];
-    }
+	public function user()
+	{
+		return $this->belongsTo(User::class, 'created_by');
+	}
 
-    /**
-     * Get the user who created this job.
-     */
-    public function creator()
-    {
-        return $this->belongsTo(User::class, 'created_by');
-    }
-
-    /**
-     * Get the user assigned to this job.
-     */
-    public function assignedUser()
-    {
-        return $this->belongsTo(User::class, 'assigned_to');
-    }
-
-    /**
-     * Get the details for this job.
-     */
-    public function details()
-    {
-        return $this->hasMany(JobDetail::class, 'job_detail_id');
-    }
+	public function job_details()
+	{
+		return $this->hasMany(JobDetail::class);
+	}
 }

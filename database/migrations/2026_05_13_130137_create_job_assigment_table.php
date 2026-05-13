@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('job_detail', function (Blueprint $table) {
-            $table->foreign(['job_detail_id'], 'fk_job_detail_job')->references(['id'])->on('job')->onUpdate('cascade')->onDelete('cascade');
+        Schema::create('job_assigment', function (Blueprint $table) {
+            $table->integer('id', true);
+            $table->integer('job_detail_id')->index('fk_job_assignment_job_detail');
+            $table->integer('assigned_to')->index('fk_job_assignment_user');
+            $table->boolean('is_delete');
         });
     }
 
@@ -21,8 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('job_detail', function (Blueprint $table) {
-            $table->dropForeign('fk_job_detail_job');
-        });
+        Schema::dropIfExists('job_assigment');
     }
 };

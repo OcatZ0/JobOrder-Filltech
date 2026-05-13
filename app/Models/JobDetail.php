@@ -1,54 +1,55 @@
 <?php
 
+/**
+ * Created by Reliese Model.
+ */
+
 namespace App\Models;
 
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Class JobDetail
+ * 
+ * @property int $id
+ * @property int $job_id
+ * @property Carbon $start_at
+ * @property Carbon|null $end_at
+ * @property bool $is_deleted
+ * 
+ * @property Job $job
+ * @property Collection|JobAssigment[] $job_assigments
+ *
+ * @package App\Models
+ */
 class JobDetail extends Model
 {
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'job_detail';
+	protected $table = 'job_detail';
+	public $timestamps = false;
 
-    /**
-     * Indicates if the model should be timestamped.
-     *
-     * @var bool
-     */
-    public $timestamps = false;
+	protected $casts = [
+		'job_id' => 'int',
+		'start_at' => 'datetime',
+		'end_at' => 'datetime',
+		'is_deleted' => 'bool'
+	];
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
-    protected $fillable = [
-        'job_detail_id',
-        'picture_filename',
-        'picture_description',
-        'is_deleted',
-    ];
+	protected $fillable = [
+		'job_id',
+		'start_at',
+		'end_at',
+		'is_deleted'
+	];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'is_deleted' => 'boolean',
-        ];
-    }
+	public function job()
+	{
+		return $this->belongsTo(Job::class);
+	}
 
-    /**
-     * Get the job that this detail belongs to.
-     */
-    public function job()
-    {
-        return $this->belongsTo(Job::class, 'job_detail_id');
-    }
+	public function job_assigments()
+	{
+		return $this->hasMany(JobAssigment::class);
+	}
 }

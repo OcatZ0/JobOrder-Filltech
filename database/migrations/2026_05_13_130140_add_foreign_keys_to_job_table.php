@@ -12,7 +12,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('job', function (Blueprint $table) {
-            $table->foreign(['assigned_to'], 'fk_job_assigned_to')->references(['id'])->on('user')->onUpdate('cascade')->onDelete('cascade');
             $table->foreign(['created_by'], 'fk_job_created_by')->references(['id'])->on('user')->onUpdate('cascade')->onDelete('cascade');
         });
     }
@@ -23,7 +22,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('job', function (Blueprint $table) {
-            $table->dropForeign('fk_job_assigned_to');
             $table->dropForeign('fk_job_created_by');
         });
     }

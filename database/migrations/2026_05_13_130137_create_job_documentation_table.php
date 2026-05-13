@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('job_detail', function (Blueprint $table) {
+        Schema::create('job_documentation', function (Blueprint $table) {
             $table->integer('id', true);
-            $table->integer('job_detail_id')->index('fk_job_detail_job');
-            $table->string('picture_filename', 255);
-            $table->string('picture_description', 200)->nullable();
-            $table->boolean('is_deleted');
+            $table->integer('job_assignment_id')->index('fk_job_assignment_job_documentation');
+            $table->string('picture_filename');
+            $table->string('picture_description');
+            $table->boolean('is_delete');
         });
     }
 
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('job_detail');
+        Schema::dropIfExists('job_documentation');
     }
 };
