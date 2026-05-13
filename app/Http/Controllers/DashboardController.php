@@ -16,7 +16,7 @@ class DashboardController extends Controller
     {
         $today = Carbon::now()->toDateString();
 
-        $jobs = Job::with(['creator', 'assignedUser'])
+        $jobs = Job::with(['user', 'job_details.job_assigments.user'])
             ->where('is_deleted', false)
             ->whereDate('start_at', $today)
             ->orderBy('number_of_the_day', 'asc')
@@ -38,7 +38,7 @@ class DashboardController extends Controller
      */
     public function all()
     {
-        $jobs = Job::with(['creator', 'assignedUser'])
+        $jobs = Job::with(['user', 'job_details.job_assigments.user'])
             ->where('is_deleted', false)
             ->orderBy('start_at', 'desc')
             ->get();
@@ -62,7 +62,9 @@ class DashboardController extends Controller
             ->where('id', '!=', auth()->id())
             ->get();
 
-        return view('main.create', compact('users'));
+        $classifications = \App\Models\JobClassification::all();
+
+        return view('main.create', compact('users', 'classifications'));
     }
 
     /**
@@ -72,25 +74,57 @@ class DashboardController extends Controller
     {
         $validated = $request->validate([
             'job_description' => 'required|string|max:255',
-            'assigned_to' => 'required|exists:user,id',
+            'job_classification_id' => 'required|exists:job_classification,id',
+            'assigned_to' => 'required|array|min:1',
+            'assigned_to.*' => 'exists:user,id',
             'start_at' => 'required|date_format:Y-m-d\TH:i',
-            'end_at' => 'required|date_format:Y-m-d\TH:i|after:start_at',
+            'duration' => 'required|integer|min:1|max:1440',
         ], [
             'job_description.required' => 'Deskripsi pekerjaan tidak boleh kosong',
             'job_description.max' => 'Deskripsi pekerjaan maksimal 255 karakter',
-            'assigned_to.required' => 'Pengguna yang ditugaskan tidak boleh kosong',
-            'assigned_to.exists' => 'Pengguna yang dipilih tidak valid',
+            'job_classification_id.required' => 'Klasifikasi pekerjaan harus dipilih',
+            'job_classification_id.exists' => 'Klasifikasi pekerjaan yang dipilih tidak valid',
+            'assigned_to.required' => 'Minimal satu pengguna harus ditugaskan',
+            'assigned_to.array' => 'Format pengguna yang ditugaskan tidak valid',
+            'assigned_to.min' => 'Minimal satu pengguna harus ditugaskan',
+            'assigned_to.*.exists' => 'Salah satu pengguna yang dipilih tidak valid',
             'start_at.required' => 'Waktu mulai tidak boleh kosong',
             'start_at.date_format' => 'Format waktu mulai tidak valid',
-            'end_at.required' => 'Waktu selesai tidak boleh kosong',
-            'end_at.date_format' => 'Format waktu selesai tidak valid',
-            'end_at.after' => 'Waktu selesai harus setelah waktu mulai',
+            'duration.required' => 'Durasi tidak boleh kosong',
+            'duration.integer' => 'Durasi harus berupa angka',
+            'duration.min' => 'Durasi minimal 1 menit',
+            'duration.max' => 'Durasi maksimal 1440 menit',
         ]);
 
-        $validated['created_by'] = auth()->id();
-        $validated['is_deleted'] = false;
+        $today = Carbon::now()->toDateString();
+        $numberForToday = Job::where('is_deleted', false)
+            ->whereDate('start_at', $today)
+            ->count() + 1;
 
-        Job::create($validated);
+        $job = Job::create([
+            'number_of_the_day' => $numberForToday,
+            'job_classification_id' => $validated['job_classification_id'],
+            'created_by' => auth()->id(),
+            'job_description' => $validated['job_description'],
+            'start_at' => $validated['start_at'],
+            'duration' => $validated['duration'],
+            'status' => 'waiting_acc',
+            'is_deleted' => false,
+        ]);
+
+        // Create job detail
+        $jobDetail = $job->job_details()->create([
+            'start_at' => $validated['start_at'],
+            'is_deleted' => false,
+        ]);
+
+        // Create job assignments for each assigned user
+        foreach ($validated['assigned_to'] as $userId) {
+            $jobDetail->job_assigments()->create([
+                'assigned_to' => $userId,
+                'is_delete' => false,
+            ]);
+        }
 
         return redirect()->route('dashboard')->with('success', 'Pesanan pekerjaan berhasil ditambahkan');
     }

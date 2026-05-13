@@ -103,10 +103,10 @@
                     <tr class="border-b border-gray-200 hover:bg-gray-50 transition">
                         <td class="px-6 py-4 text-sm text-slate-700">{{ $job->number_of_the_day }}</td>
                         <td class="px-6 py-4 text-sm text-slate-700">{{ $job->job_description }}</td>
-                        <td class="px-6 py-4 text-sm text-slate-700">{{ $job->creator->name ?? 'N/A' }}</td>
-                        <td class="px-6 py-4 text-sm text-slate-700">{{ $job->assignedUser->name ?? 'N/A' }}</td>
+                        <td class="px-6 py-4 text-sm text-slate-700">{{ $job->user->name ?? 'N/A' }}</td>
+                        <td class="px-6 py-4 text-sm text-slate-700">{{ $job->job_details[0]?->job_assigments[0]?->user?->name ?? 'N/A' }}</td>
                         <td class="px-6 py-4 text-sm text-slate-700">{{ $job->start_at->format('M d, Y H:i') }}</td>
-                        <td class="px-6 py-4 text-sm text-slate-700">{{ $job->end_at->format('M d, Y H:i') }}</td>
+                        <td class="px-6 py-4 text-sm text-slate-700">{{ $job->job_details[0]?->end_at?->format('M d, Y H:i') ?? 'N/A' }}</td>
                         <td class="px-6 py-4">
                             <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold {{ $job->status === 'done' ? 'bg-emerald-100 text-emerald-700' : ($job->status === 'on_progress' ? 'bg-amber-100 text-amber-700' : ($job->status === 'pending' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700')) }}">
                                 <span class="w-2 h-2 rounded-full {{ $job->status === 'done' ? 'bg-emerald-500' : ($job->status === 'on_progress' ? 'bg-amber-500' : ($job->status === 'pending' ? 'bg-red-500' : 'bg-blue-500')) }}"></span>

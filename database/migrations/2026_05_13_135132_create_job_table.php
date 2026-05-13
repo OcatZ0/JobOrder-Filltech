@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('job', function (Blueprint $table) {
             $table->integer('id', true);
             $table->integer('number_of_the_day');
+            $table->integer('job_classification_id')->index('fk_job_job_classification');
             $table->integer('created_by')->index('fk_job_created_by');
             $table->string('job_description', 200);
             $table->dateTime('start_at');

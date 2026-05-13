@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
  * 
  * @property int $id
  * @property int $number_of_the_day
+ * @property int $job_classification_id
  * @property int $created_by
  * @property string $job_description
  * @property Carbon $start_at
@@ -25,6 +26,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property bool $is_deleted
  * 
  * @property User $user
+ * @property JobClassification $job_classification
  * @property Collection|JobDetail[] $job_details
  *
  * @package App\Models
@@ -36,6 +38,7 @@ class Job extends Model
 
 	protected $casts = [
 		'number_of_the_day' => 'int',
+		'job_classification_id' => 'int',
 		'created_by' => 'int',
 		'start_at' => 'datetime',
 		'duration' => 'int',
@@ -45,6 +48,7 @@ class Job extends Model
 
 	protected $fillable = [
 		'number_of_the_day',
+		'job_classification_id',
 		'created_by',
 		'job_description',
 		'start_at',
@@ -58,6 +62,11 @@ class Job extends Model
 	public function user()
 	{
 		return $this->belongsTo(User::class, 'created_by');
+	}
+
+	public function job_classification()
+	{
+		return $this->belongsTo(JobClassification::class);
 	}
 
 	public function job_details()

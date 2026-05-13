@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::table('job', function (Blueprint $table) {
             $table->foreign(['created_by'], 'fk_job_created_by')->references(['id'])->on('user')->onUpdate('cascade')->onDelete('cascade');
+            $table->foreign(['job_classification_id'], 'fk_job_job_classification')->references(['id'])->on('job_classification')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 
@@ -23,6 +24,7 @@ return new class extends Migration
     {
         Schema::table('job', function (Blueprint $table) {
             $table->dropForeign('fk_job_created_by');
+            $table->dropForeign('fk_job_job_classification');
         });
     }
 };

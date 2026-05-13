@@ -55,7 +55,7 @@
         <!-- Assigned User -->
         <div class="rounded-2xl bg-white shadow-sm border border-gray-200 p-6">
             <h3 class="text-sm font-medium text-gray-500 uppercase mb-2">Ditugaskan Ke</h3>
-            <p class="text-slate-700">{{ $job->assignedUser?->name ?? 'N/A' }}</p>
+            <p class="text-slate-700">{{ $job->job_details[0]?->job_assigments[0]?->user?->name ?? 'N/A' }}</p>
         </div>
     </div>
 
@@ -68,7 +68,7 @@
 
         <div class="rounded-2xl bg-white shadow-sm border border-gray-200 p-6">
             <h3 class="text-sm font-medium text-gray-500 uppercase mb-2">Tanggal Selesai</h3>
-            <p class="text-slate-700">{{ $job->end_at?->format('d M Y H:i') ?? 'N/A' }}</p>
+            <p class="text-slate-700">{{ $job->job_details[0]?->end_at?->format('d M Y H:i') ?? 'N/A' }}</p>
         </div>
     </div>
 
